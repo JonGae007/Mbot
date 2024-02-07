@@ -61,10 +61,10 @@ void setup() {
       }
       }
       }if(usr.distanceCm()< 20 && usv.distanceCm()< 10){ //vorne u rechts block
-        turnForSeconds(3, 40, 1.5);
+        turnForSeconds(3, 40, 0.4);
       }else if(usr.distanceCm()> 20){ //rechts lücke
       turnForSeconds(1, 40, 0.7);
-      turnForSeconds(4, 40, 1.5);
+      turnForSeconds(4, 40, 0.4);
       turnForSeconds(1, 40, 0.7);
     }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
       move(4, 40);
@@ -110,6 +110,12 @@ void move(int direction, int speed) {
     rightSpeed = -result;
   } else if (direction == 4) {  //rechts
     leftSpeed = result;
+    rightSpeed = result;
+  } else if (direction == 5) {  //links
+    leftSpeed = -result;
+    rightSpeed = -result/1.5;
+  } else if (direction == 6) {  //rechts
+    leftSpeed = result/1.5;
     rightSpeed = result;
   }
   Motor_1.setTarPWM(leftSpeed);
