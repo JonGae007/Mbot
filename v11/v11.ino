@@ -9,6 +9,7 @@ MeEncoderOnBoard Motor_1(SLOT1);
 MeEncoderOnBoard Motor_2(SLOT2);
 MeColorSensor colorsensor(6);
 MeBuzzer buzzer;
+MeRGBLed rgbled_0(0, 12);
 
 uint8_t colorresult;
 uint16_t redvalue = 0, greenvalue = 0, bluevalue = 0, colorvalue = 0;
@@ -16,6 +17,8 @@ uint8_t grayscale = 0;
 long systime = 0, colorcode = 0;
 void setup() {
   // put your setup code here, to run once:
+  rgbled_0.setpin(44);
+  rgbled_0.fillPixelsBak(0, 2, 1);
   buzzer.setpin(45);
   Serial.begin(115200);
   colorsensor.SensorInit();  //
@@ -55,30 +58,36 @@ void setup() {
       }else{
         if(redvalue <100 &&redvalue >0&&greenvalue <290 &&greenvalue >200&&bluevalue <135 &&bluevalue >0){
         Serial.println(" SCHWARZ");
-        turnForSeconds(1, -40, 0.3);
         buzzer.tone(700, 1000);
+        turnForSeconds(1, -40, 0.3);
+        turnForSeconds(4, -40, 0.4);
       }else{
         if(redvalue <290 &&redvalue >200&&greenvalue <289 &&greenvalue >200&&bluevalue <135 &&bluevalue >100){
         Serial.println(" ROT");
         buzzer.tone(300, 1000);
+        turnForSeconds(1, 0, 5);
+        rgbled_0.setColor(0,255,255,255);
+        rgbled_0.show();
+        _delay(1);
+        rgbled_0.setColor(0,0,0,0);
+        rgbled_0.show();
       }else{
         Serial.println(" ");
       }
       }
       }
-      if(usr.distanceCm()> 20){
-      turnForSeconds(1, 40, 0.5);
-      turnForSeconds(4, 40, 1.5);
-      turnForSeconds(1, 40, 0.5);
-    }else if(usv.distanceCm() > 10){
-      move(1, 40);
-    }else {
-      move(1,0);
-    }
-    if(usr.distanceCm()> 9&&usr.distanceCm()< 11){
-      move(4, 40);
-    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){
-      move(3, 40);
+      if(usr.distanceCm()< 20 && usv.distanceCm()< 10){ //vorne u rechts block
+        turnForSeconds(3, 40, 0.4);
+      }else if(usr.distanceCm()> 20){ //rechts lücke
+      turnForSeconds(1, 40, 0.4);
+      turnForSeconds(4, 40, 0.4);
+      turnForSeconds(1, 40, 0.4);
+    }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
+      turnForSeconds(4, 40, 0.07);
+    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
+      turnForSeconds(3, 40, 0.07);
+    }else{
+      move(1,40);
     }
   _loop();
       
