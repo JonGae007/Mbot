@@ -26,14 +26,14 @@ void setup() {
   attachInterrupt(Motor_2.getIntNum(), isr_process_encoder2, RISING);
   int stop = 0;
   while (true) {
-    if (millis() - systime > 200) {
+    if (millis() - systime > 200) {//alle 200 millisekunden Farbsensor abfragen
       systime = millis();
       colorresult = colorsensor.Returnresult();
       redvalue   = colorsensor.ReturnRedData();
       greenvalue = colorsensor.ReturnGreenData();
       bluevalue  = colorsensor.ReturnBlueData();
       colorvalue = colorsensor.ReturnColorData();
-      colorcode = colorsensor.ReturnColorCode();//RGB24code
+      colorcode = colorsensor.ReturnColorCode();
       grayscale  = colorsensor.ReturnGrayscale();
       Serial.print("R:");
       Serial.print(redvalue);
@@ -60,20 +60,18 @@ void setup() {
         Serial.println(" ");
       }
       }
-      }
-      if(usr.distanceCm()> 20){
+      }if(usr.distanceCm()< 20 && usv.distanceCm()< 15){ //vorne u rechts block
+        turnForSeconds(3, 40, 1.5);
+      }else if(usr.distanceCm()> 20){ //rechts lücke
       turnForSeconds(1, 40, 0.7);
       turnForSeconds(4, 40, 1.5);
       turnForSeconds(1, 40, 0.7);
-    }else if(usv.distanceCm() > 10){
-      move(1, 40);
-    }else {
-      move(1,0);
-    }
-    if(usr.distanceCm()> 9&&usr.distanceCm()< 11){
+    }else if(usr.distanceCm()> 9&&usr.distanceCm()< 11){ // zwischen 9 u 11 rechts Korrigieren
       move(4, 40);
-    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){
+    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
       move(3, 40);
+    }else{
+      move(1,40);
     }
   _loop();
       
@@ -133,9 +131,8 @@ void _loop() {
 void turnForSeconds(int direction, int speed, float seconds) {
   move(direction, speed);
   _delay(seconds);
-  move(1, 0);  // Stoppen des mBot nach der festgelegten Zeit
+  move(1, 0);
 }
 void loop() {
-  // put your main code here, to run repeatedly:
   _loop();
 }
