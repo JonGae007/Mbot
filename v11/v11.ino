@@ -16,6 +16,7 @@ uint8_t grayscale = 0;
 long systime = 0, colorcode = 0;
 void setup() {
   // put your setup code here, to run once:
+  buzzer.setpin(45);
   Serial.begin(115200);
   colorsensor.SensorInit();  //
   systime = millis();
@@ -27,15 +28,14 @@ void setup() {
   attachInterrupt(Motor_2.getIntNum(), isr_process_encoder2, RISING);
   int stop = 0;
   while (true) {
-    buzzer.setpin(45);
-    if (millis() - systime > 200) {//alle 200 millisekunden Farbsensor abfragen
+    if (millis() - systime > 200) {
       systime = millis();
       colorresult = colorsensor.Returnresult();
       redvalue   = colorsensor.ReturnRedData();
       greenvalue = colorsensor.ReturnGreenData();
       bluevalue  = colorsensor.ReturnBlueData();
       colorvalue = colorsensor.ReturnColorData();
-      colorcode = colorsensor.ReturnColorCode();
+      colorcode = colorsensor.ReturnColorCode();//RGB24code
       grayscale  = colorsensor.ReturnGrayscale();
       Serial.print("R:");
       Serial.print(redvalue);
@@ -49,33 +49,36 @@ void setup() {
       Serial.print("C:");
       Serial.print(colorvalue);
       Serial.print("\t");
-      if(colorvalue <100 &&colorvalue >70){
+      if(redvalue <290 &&redvalue >95&&greenvalue <700 &&greenvalue >260&&bluevalue <280 &&bluevalue >120){
         Serial.println(" SILBER");
         buzzer.tone(500, 1000);
       }else{
-        if(colorvalue <20 &&colorvalue >0){
+        if(redvalue <100 &&redvalue >0&&greenvalue <290 &&greenvalue >200&&bluevalue <135 &&bluevalue >0){
         Serial.println(" SCHWARZ");
-        move(1, -40);
+        turnForSeconds(1, -40, 0.3);
         buzzer.tone(700, 1000);
       }else{
-        if(colorvalue <47 &&colorvalue >25){
+        if(redvalue <290 &&redvalue >200&&greenvalue <289 &&greenvalue >200&&bluevalue <135 &&bluevalue >100){
         Serial.println(" ROT");
+        buzzer.tone(300, 1000);
       }else{
         Serial.println(" ");
       }
       }
-      }if(usr.distanceCm()< 20 && usv.distanceCm()< 10){ //vorne u rechts block
-        turnForSeconds(3, 40, 0.4);
-      }else if(usr.distanceCm()> 20){ //rechts lücke
-      turnForSeconds(1, 40, 0.7);
-      turnForSeconds(4, 40, 0.4);
-      turnForSeconds(1, 40, 0.7);
-    }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
+      }
+      if(usr.distanceCm()> 20){
+      turnForSeconds(1, 40, 0.5);
+      turnForSeconds(4, 40, 1.5);
+      turnForSeconds(1, 40, 0.5);
+    }else if(usv.distanceCm() > 10){
+      move(1, 40);
+    }else {
+      move(1,0);
+    }
+    if(usr.distanceCm()> 9&&usr.distanceCm()< 11){
       move(4, 40);
-    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
+    }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){
       move(3, 40);
-    }else{
-      move(1,40);
     }
   _loop();
       
@@ -115,12 +118,6 @@ void move(int direction, int speed) {
   } else if (direction == 4) {  //rechts
     leftSpeed = result;
     rightSpeed = result;
-  } else if (direction == 5) {  //links
-    leftSpeed = -result;
-    rightSpeed = -result/1.5;
-  } else if (direction == 6) {  //rechts
-    leftSpeed = result/1.5;
-    rightSpeed = result;
   }
   Motor_1.setTarPWM(leftSpeed);
   Motor_2.setTarPWM(rightSpeed);
@@ -141,8 +138,9 @@ void _loop() {
 void turnForSeconds(int direction, int speed, float seconds) {
   move(direction, speed);
   _delay(seconds);
-  move(1, 0);
+  move(1, 0);  // Stoppen des mBot nach der festgelegten Zeit
 }
 void loop() {
+  // put your main code here, to run repeatedly:
   _loop();
 }
