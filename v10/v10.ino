@@ -8,6 +8,7 @@ MeUltrasonicSensor usr(8);
 MeEncoderOnBoard Motor_1(SLOT1);
 MeEncoderOnBoard Motor_2(SLOT2);
 MeColorSensor colorsensor(6);
+MeEncoderNew EmotorV2_7_1(0x11+ 7, 1);
 
 uint8_t colorresult;
 uint16_t redvalue = 0, greenvalue = 0, bluevalue = 0, colorvalue = 0;
@@ -22,6 +23,7 @@ void setup() {
   TCCR1B = _BV(CS11) | _BV(WGM12);
   TCCR2A = _BV(WGM21) | _BV(WGM20);
   TCCR2B = _BV(CS21);
+  EmotorV2_7_1.begin();
   attachInterrupt(Motor_1.getIntNum(), isr_process_encoder1, RISING);
   attachInterrupt(Motor_2.getIntNum(), isr_process_encoder2, RISING);
   int stop = 0;
@@ -56,17 +58,18 @@ void setup() {
       }else{
         if(colorvalue <47 &&colorvalue >25){
         Serial.println(" ROT");
+        EmotorV2_7_1.move(30,40);
       }else{
         Serial.println(" ");
       }
       }
-      }if(usr.distanceCm()< 20 && usv.distanceCm()< 10){ //vorne u rechts block
+      }if(usr.distanceCm()< 20 && usv.distanceCm()< 15){ //vorne u rechts block
         turnForSeconds(3, 40, 1.5);
       }else if(usr.distanceCm()> 20){ //rechts lücke
       turnForSeconds(1, 40, 0.7);
       turnForSeconds(4, 40, 1.5);
       turnForSeconds(1, 40, 0.7);
-    }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
+    }else if(usr.distanceCm()> 9&&usr.distanceCm()< 11){ // zwischen 9 u 11 rechts Korrigieren
       move(4, 40);
     }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
       move(3, 40);
