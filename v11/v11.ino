@@ -52,17 +52,24 @@ void setup() {
       Serial.print("C:");
       Serial.print(colorvalue);
       Serial.print("\t");
-      if(redvalue <290 &&redvalue >95&&greenvalue <700 &&greenvalue >260&&bluevalue <280 &&bluevalue >120){
+      if(redvalue <1300 &&redvalue >800&&greenvalue <2200&&greenvalue >1700&&bluevalue <1300 &&bluevalue >700){
         Serial.println(" SILBER");
         buzzer.tone(500, 1000);
       }else{
-        if(redvalue <100 &&redvalue >0&&greenvalue <290 &&greenvalue >200&&bluevalue <135 &&bluevalue >0){
+        if(redvalue <450 &&redvalue >0&&greenvalue <1200 &&greenvalue >200&&bluevalue <510 &&bluevalue >0){
         Serial.println(" SCHWARZ");
+        turnForSeconds(1, -40, 0.7);
+        turnForSeconds(3, -40, 0.4);
+        if(usv.distanceCm()>15){
+          turnForSeconds(1, 40, 0.7);
+        }else{
+          turnForSeconds(3, -40, 0.4);
+        }
+        
+        
         buzzer.tone(700, 1000);
-        turnForSeconds(1, -40, 0.3);
-        turnForSeconds(4, -40, 0.4);
       }else{
-        if(redvalue <290 &&redvalue >200&&greenvalue <289 &&greenvalue >200&&bluevalue <135 &&bluevalue >100){
+        if(redvalue <700 &&redvalue >600&&greenvalue <1100 &&greenvalue >900&&bluevalue <500 &&bluevalue >400){
         Serial.println(" ROT");
         buzzer.tone(300, 1000);
         turnForSeconds(1, 0, 5);
@@ -83,9 +90,9 @@ void setup() {
       turnForSeconds(4, 40, 0.4);
       turnForSeconds(1, 40, 0.4);
     }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
-      turnForSeconds(4, 40, 0.07);
+      turnForSeconds(4, 40, 0.05);
     }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
-      turnForSeconds(3, 40, 0.07);
+      turnForSeconds(3, 40, 0.05);
     }else{
       move(1,40);
     }

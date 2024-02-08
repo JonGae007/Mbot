@@ -24,9 +24,9 @@ void setup() {
   EmotorV2_7_1.begin();
   EmotorV2_7_2.begin();
   while(1) {
-      EmotorV2_7_1.setPWM(50/100.0*255);
+      EmotorV2_7_1.setPWM(-15/100.0*255);
 
-      EmotorV2_7_2.setPWM(30/100.0*255);
+      EmotorV2_7_2.setPWM(-10/100.0*255);
 
       _loop();
   }
