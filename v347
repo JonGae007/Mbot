@@ -78,20 +78,31 @@ void setup() {
         EmotorV2_7_1.move(30,40);
         rgbled_0.setColor(0,255,255,255);
         rgbled_0.show();
+        delay(100);
+        rgbled_0.setColor(0,0,0,255);
+        rgbled_0.show();
         _delay(1);
         rgbled_0.setColor(0,0,0,0);
         rgbled_0.show();
+        turnForSeconds(1, -40, 0.7);
+        turnForSeconds(3, -40, 0.4);
+        if(usv.distanceCm()>15){
+          turnForSeconds(1, 40, 0.7);
+        }else{
+          turnForSeconds(3, -40, 0.4);
+        }
+
       }else{
         Serial.println(" ");
       }
       }
       }
       if(usr.distanceCm()< 20 && usv.distanceCm()< 10){ //vorne u rechts block
-        turnForSeconds(3, 40, 0.4);
+        turnForSeconds(3, 40, 1);
       }else if(usr.distanceCm()> 20){ //rechts lücke
-      turnForSeconds(1, 40, 0.4);
-      turnForSeconds(4, 40, 0.4);
-      turnForSeconds(1, 40, 0.4);
+      turnForSeconds(1, 40, 1);
+      turnForSeconds(4, 40, 1);
+      turnForSeconds(1, 40, 0.7);
     }else if(usr.distanceCm()> 9&&usr.distanceCm()< 15){ // zwischen 9 u 11 rechts Korrigieren
       turnForSeconds(4, 40, 0.05);
     }else if(usr.distanceCm()> 5&&usr.distanceCm()< 7){ //zwischen 5 u 7 rechts
