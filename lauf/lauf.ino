@@ -16,16 +16,16 @@ uint8_t colorresult;
 uint16_t redvalue = 0, greenvalue = 0, bluevalue = 0, colorvalue = 0;
 uint8_t grayscale = 0;
 long systime = 0, colorcode = 0;
-int dreh = 1.9;
+int dreh = 1.2;
+int speed1 = 50;  //WICHTIG
 
 void setup() {
-  // put your setup code here, to run once:
   rgbled_0.setpin(44);
   rgbled_0.fillPixelsBak(0, 2, 1);
   buzzer.setpin(45);
   Serial.begin(115200);
   EmotorV2_7_1.begin();
-  colorsensor.SensorInit();  //
+  colorsensor.SensorInit();
   systime = millis();
   TCCR1A = _BV(WGM10);
   TCCR1B = _BV(CS11) | _BV(WGM12);
@@ -42,7 +42,7 @@ void setup() {
       greenvalue = colorsensor.ReturnGreenData();
       bluevalue = colorsensor.ReturnBlueData();
       colorvalue = colorsensor.ReturnColorData();
-      colorcode = colorsensor.ReturnColorCode();  //RGB24code
+      colorcode = colorsensor.ReturnColorCode();
       grayscale = colorsensor.ReturnGrayscale();
       Serial.print("R:");
       Serial.print(redvalue);
@@ -58,41 +58,38 @@ void setup() {
       Serial.print("\t");
       if (redvalue < 1300 && redvalue > 800 && greenvalue < 2200 && greenvalue > 1700 && bluevalue < 1300 && bluevalue > 700) {
         Serial.println(" SILBER");
-        buzzer.tone(500, 1000);
+        buzzer.tone(2000, 1000);
       } else {
         if (redvalue < 450 && redvalue > 0 && greenvalue < 1200 && greenvalue > 200 && bluevalue < 510 && bluevalue > 0) {
           Serial.println(" SCHWARZ");
           turnForSeconds(1, -40, 0.9);
-          turnForSeconds(3, 40, dreh);
+          turnForSeconds(3, speed1, dreh);
           if (usv.distanceCm() > 15) {
             turnForSeconds(1, 40, 0.4);
           } else {
-            turnForSeconds(3, 40, dreh);
+            turnForSeconds(3, speed1, dreh);
             move(1, 0);
           }
-
-
-          buzzer.tone(700, 1000);
         } else {
           if (redvalue < 700 && redvalue > 600 && greenvalue < 1100 && greenvalue > 900 && bluevalue < 500 && bluevalue > 400) {
             Serial.println(" ROT");
-            buzzer.tone(300, 1000);
+            turnForSeconds(1,0,5);
             EmotorV2_7_1.move(30, 40);
             rgbled_0.setColor(0, 255, 255, 255);
             rgbled_0.show();
             delay(100);
-            rgbled_0.setColor(0, 0, 0, 255);
+            rgbled_0.setColor(0, 255, 0, 0);
             rgbled_0.show();
-            _delay(1);
+            delay(100);
             rgbled_0.setColor(0, 0, 0, 0);
             rgbled_0.show();
-            turnForSeconds(3, 40, 0.4);
-            turnForSeconds(3, 40, dreh);
-            if (usv.distanceCm() > 15) {
-              turnForSeconds(1, 40, 0.7);
-            } else {
-              turnForSeconds(3, 40, dreh);
-              turnForSeconds(1, 40, 0.7);
+            if (usv.distanceCm() > 15){
+              turnForSeconds(1, 40, 0.9);
+            } else if (usr.distanceCm() > 15){
+              turnForSeconds(4, speed1, dreh);
+            }else {
+              turnForSeconds(4, speed1, dreh);
+              turnForSeconds(1, 40, 0.9);
             }
 
           } else {
@@ -100,11 +97,11 @@ void setup() {
           }
         }
       }
-      if (usr.distanceCm() < 20 && usv.distanceCm() < 10) {  //vorne u rechts block
-        turnForSeconds(3, 40, dreh);
+      if (usr.distanceCm() < 20 && usv.distanceCm() < 15) {  //vorne u rechts block
+        turnForSeconds(3, speed1, dreh);
       } else if (usr.distanceCm() > 16) {  //rechts lücke
         turnForSeconds(1, 40, 0.5);
-        turnForSeconds(4, 40, dreh);
+        turnForSeconds(4, speed1, dreh);
         turnForSeconds(1, 40, 0.8);
       } else if (usr.distanceCm() > 7 && usr.distanceCm() < 15) {  // zwischen 9 u 11 rechts Korrigieren
         turnForSeconds(4, 30, 0.02);
